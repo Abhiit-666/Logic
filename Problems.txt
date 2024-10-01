@@ -1,0 +1,681 @@
+Got it! Let's increase the **size and complexity** of the inputs by adding more orders, shipments, vendors, and constraints to make it more challenging and realistic.
+
+---
+
+### **Problem 1: Complex Shipment Consolidation**
+
+**Problem:**
+You need to consolidate multiple orders into fewer shipments to reduce shipping costs. Each order has a destination, volume, weight, time window for delivery, and a priority level. The truck has a weight capacity, volume capacity, and time constraints. The goal is to minimize costs while ensuring on-time deliveries.
+
+**Input:**
+```json
+{
+  "orders": [
+    { "id": 1, "destination": "A", "volume": 5, "weight": 200, "priority": 1, "timeWindow": [8, 12] },
+    { "id": 2, "destination": "B", "volume": 3, "weight": 150, "priority": 2, "timeWindow": [9, 11] },
+    { "id": 3, "destination": "A", "volume": 4, "weight": 250, "priority": 1, "timeWindow": [10, 14] },
+    { "id": 4, "destination": "C", "volume": 7, "weight": 300, "priority": 3, "timeWindow": [8, 16] },
+    { "id": 5, "destination": "D", "volume": 6, "weight": 250, "priority": 1, "timeWindow": [9, 17] },
+    { "id": 6, "destination": "A", "volume": 5, "weight": 220, "priority": 2, "timeWindow": [8, 12] }
+  ],
+  "truck": {
+    "capacity": { "weight": 500, "volume": 15 },
+    "availableTimeWindow": [7, 18]
+  }
+}
+```
+
+**Expected Output:**
+```json
+{
+  "shipments": [
+    { "shipmentId": 1, "orders": [1, 3], "totalWeight": 450, "totalVolume": 9, "destination": "A" },
+    { "shipmentId": 2, "orders": [2, 5], "totalWeight": 400, "totalVolume": 9, "destination": "B" },
+    { "shipmentId": 3, "orders": [4], "totalWeight": 300, "totalVolume": 7, "destination": "C" }
+  ]
+}
+```
+
+---
+
+### **Problem 2: Vendor Order Allocation**
+
+**Problem:**
+You work with multiple vendors that offer different pricing for various products. You need to allocate orders to vendors to minimize the total cost, while considering each vendor’s inventory limitations, minimum order quantity, shipping time, and delivery windows.
+
+**Input:**
+```json
+{
+  "orders": [
+    { "id": 1, "product": "X", "quantity": 500, "deadline": "2024-10-10", "location": "City A" },
+    { "id": 2, "product": "Y", "quantity": 700, "deadline": "2024-10-11", "location": "City B" },
+    { "id": 3, "product": "Z", "quantity": 200, "deadline": "2024-10-09", "location": "City C" },
+    { "id": 4, "product": "X", "quantity": 300, "deadline": "2024-10-12", "location": "City D" }
+  ],
+  "vendors": [
+    { "id": 1, "product": "X", "pricePerUnit": 10, "inventory": 600, "shippingTime": 3, "minOrderQuantity": 100, "deliveryWindow": [8, 17] },
+    { "id": 2, "product": "Y", "pricePerUnit": 12, "inventory": 900, "shippingTime": 2, "minOrderQuantity": 200, "deliveryWindow": [9, 18] },
+    { "id": 3, "product": "Z", "pricePerUnit": 15, "inventory": 500, "shippingTime": 4, "minOrderQuantity": 50, "deliveryWindow": [8, 20] },
+    { "id": 4, "product": "X", "pricePerUnit": 9, "inventory": 200, "shippingTime": 5, "minOrderQuantity": 50, "deliveryWindow": [10, 15] }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "allocation": [
+    { "orderId": 1, "vendorId": 1, "quantity": 500 },
+    { "orderId": 2, "vendorId": 2, "quantity": 700 },
+    { "orderId": 3, "vendorId": 3, "quantity": 200 },
+    { "orderId": 4, "vendorId": 4, "quantity": 200 }
+  ],
+  "totalCost": 17000
+}
+```
+
+---
+
+### **Problem 3: Multi-Stop Shipment Routing**
+
+**Problem:**
+You need to plan the optimal routes for a set of trucks delivering shipments to multiple locations. Each route has a specific distance, and some routes have traffic delays. Trucks have fuel capacity limits, and refueling stations are available at certain points. You must minimize total travel time while ensuring trucks refuel when needed.
+
+**Input:**
+```json
+{
+  "trucks": [
+    { "id": 1, "fuelCapacity": 400, "fuelConsumptionRate": 10, "startLocation": "Warehouse A" },
+    { "id": 2, "fuelCapacity": 350, "fuelConsumptionRate": 12, "startLocation": "Warehouse A" }
+  ],
+  "shipments": [
+    { "id": 1, "origin": "Warehouse A", "destination": "Location X", "distance": 250, "priority": 1 },
+    { "id": 2, "origin": "Warehouse A", "destination": "Location Y", "distance": 150, "priority": 2 },
+    { "id": 3, "origin": "Warehouse A", "destination": "Location Z", "distance": 350, "priority": 3 },
+    { "id": 4, "origin": "Warehouse A", "destination": "Location W", "distance": 450, "priority": 1 }
+  ],
+  "trafficDelays": [
+    { "route": ["Warehouse A", "Location X"], "delay": 15 },
+    { "route": ["Warehouse A", "Location Z"], "delay": 30 }
+  ],
+  "refuelingStations": [
+    { "location": "Station A", "distanceFromWarehouse": 100 },
+    { "location": "Station B", "distanceFromWarehouse": 300 }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "routes": [
+    {
+      "truckId": 1,
+      "route": ["Warehouse A", "Station A", "Location X"],
+      "totalTime": 6,
+      "refuels": 1
+    },
+    {
+      "truckId": 2,
+      "route": ["Warehouse A", "Location Y"],
+      "totalTime": 3.5,
+      "refuels": 0
+    }
+  ]
+}
+```
+
+---
+
+### **Problem 4: Complex Order Fulfillment with Dependencies**
+
+**Problem:**
+Certain orders require components to be delivered before the main shipment can be processed. For example, the warehouse cannot fulfill an order until specific parts are delivered from a vendor. Each order has a deadline, and you need to ensure that dependencies are satisfied in time.
+
+**Input:**
+```json
+{
+  "orders": [
+    { "id": 1, "product": "A", "quantity": 500, "deadline": "2024-10-10", "dependency": 2 },
+    { "id": 2, "product": "B", "quantity": 200, "deadline": "2024-10-08", "dependency": null },
+    { "id": 3, "product": "C", "quantity": 300, "deadline": "2024-10-12", "dependency": 1 }
+  ],
+  "vendorShipments": [
+    { "id": 1, "product": "B", "deliveryDate": "2024-10-07" },
+    { "id": 2, "product": "A", "deliveryDate": "2024-10-09" },
+    { "id": 3, "product": "C", "deliveryDate": "2024-10-11" }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "fulfillmentSchedule": [
+    { "orderId": 2, "fulfillmentDate": "2024-10-07" },
+    { "orderId": 1, "fulfillmentDate": "2024-10-09" },
+    { "orderId": 3, "fulfillmentDate": "2024-10-11" }
+  ]
+}
+```
+
+---
+
+### **Problem 5: Cost Allocation for Multi-Vendor Shipments**
+
+**Problem:**
+When shipping from multiple vendors to fulfill a single order, you need to allocate shipping costs based on the vendor
+
+'s contribution to the order. Each vendor ships different quantities at different rates, and the final customer expects the full order to arrive at the same time.
+
+**Input:**
+```json
+{
+  "order": { "id": 1, "totalQuantity": 1000, "deadline": "2024-10-15" },
+  "vendors": [
+    { "id": 1, "product": "X", "shippedQuantity": 400, "shippingCost": 500, "deliveryTime": 5 },
+    { "id": 2, "product": "X", "shippedQuantity": 300, "shippingCost": 450, "deliveryTime": 4 },
+    { "id": 3, "product": "X", "shippedQuantity": 300, "shippingCost": 550, "deliveryTime": 6 }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "costAllocation": [
+    { "vendorId": 1, "allocatedCost": 0.4 * 1500 },
+    { "vendorId": 2, "allocatedCost": 0.3 * 1500 },
+    { "vendorId": 3, "allocatedCost": 0.3 * 1500 }
+  ]
+}
+```
+
+---
+
+Here are **5 more complex real-world problems** for shipment planning, vendor management, cost allocation, and routing with more detailed and larger input sets. These are designed to challenge you with various constraints and interdependencies:
+
+---
+
+### **Problem 6: Multi-Vendor Order Allocation with Delivery Constraints**
+
+**Problem:**
+You need to allocate orders to multiple vendors while minimizing the total cost. Each vendor has delivery constraints like lead time, minimum order quantities, and specific days they can ship. Your goal is to ensure orders are delivered by their respective deadlines while balancing cost.
+
+**Input:**
+```json
+{
+  "orders": [
+    { "id": 1, "product": "A", "quantity": 800, "deadline": "2024-10-15", "location": "City A" },
+    { "id": 2, "product": "B", "quantity": 500, "deadline": "2024-10-12", "location": "City B" },
+    { "id": 3, "product": "C", "quantity": 600, "deadline": "2024-10-18", "location": "City C" }
+  ],
+  "vendors": [
+    {
+      "id": 1,
+      "product": "A",
+      "pricePerUnit": 9,
+      "inventory": 600,
+      "minOrderQuantity": 200,
+      "deliveryDays": ["Monday", "Wednesday", "Friday"],
+      "leadTime": 4
+    },
+    {
+      "id": 2,
+      "product": "A",
+      "pricePerUnit": 11,
+      "inventory": 500,
+      "minOrderQuantity": 100,
+      "deliveryDays": ["Tuesday", "Thursday"],
+      "leadTime": 3
+    },
+    {
+      "id": 3,
+      "product": "B",
+      "pricePerUnit": 8,
+      "inventory": 500,
+      "minOrderQuantity": 200,
+      "deliveryDays": ["Monday", "Wednesday"],
+      "leadTime": 2
+    },
+    {
+      "id": 4,
+      "product": "C",
+      "pricePerUnit": 15,
+      "inventory": 700,
+      "minOrderQuantity": 300,
+      "deliveryDays": ["Friday", "Saturday"],
+      "leadTime": 5
+    }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "allocation": [
+    { "orderId": 1, "vendorId": 1, "quantity": 600, "totalCost": 5400 },
+    { "orderId": 1, "vendorId": 2, "quantity": 200, "totalCost": 2200 },
+    { "orderId": 2, "vendorId": 3, "quantity": 500, "totalCost": 4000 },
+    { "orderId": 3, "vendorId": 4, "quantity": 600, "totalCost": 9000 }
+  ],
+  "totalCost": 20600
+}
+```
+
+---
+
+### **Problem 7: Dynamic Shipment Scheduling with Weather Impact**
+
+**Problem:**
+You are planning shipments, but sudden weather disruptions affect certain routes. Each shipment has a priority level and time window for delivery. You need to dynamically reallocate trucks and adjust routes while accounting for weather-related delays.
+
+**Input:**
+```json
+{
+  "shipments": [
+    { "id": 1, "destination": "City A", "distance": 200, "priority": 1, "timeWindow": [8, 14] },
+    { "id": 2, "destination": "City B", "distance": 350, "priority": 2, "timeWindow": [9, 16] },
+    { "id": 3, "destination": "City C", "distance": 400, "priority": 1, "timeWindow": [7, 13] },
+    { "id": 4, "destination": "City D", "distance": 150, "priority": 3, "timeWindow": [10, 17] },
+    { "id": 5, "destination": "City E", "distance": 500, "priority": 2, "timeWindow": [6, 12] }
+  ],
+  "trucks": [
+    { "id": 1, "capacity": 1000, "location": "Warehouse A", "startAvailability": 6 },
+    { "id": 2, "capacity": 800, "location": "Warehouse A", "startAvailability": 7 },
+    { "id": 3, "capacity": 1200, "location": "Warehouse A", "startAvailability": 6 }
+  ],
+  "weatherDelays": [
+    { "route": ["Warehouse A", "City B"], "delay": 2 },
+    { "route": ["Warehouse A", "City C"], "delay": 1.5 }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "shipmentSchedule": [
+    { "truckId": 1, "shipmentId": 3, "departureTime": 6, "arrivalTime": 12 },
+    { "truckId": 2, "shipmentId": 1, "departureTime": 7, "arrivalTime": 11 },
+    { "truckId": 3, "shipmentId": 4, "departureTime": 10, "arrivalTime": 13 }
+  ]
+}
+```
+
+---
+
+### **Problem 8: Order Routing with Multiple Warehouses**
+
+**Problem:**
+You need to fulfill customer orders from multiple warehouses. Each order must be routed to the nearest warehouse that has enough inventory, and shipments must be delivered within a specified time window. Minimize total shipping distance and ensure that orders are delivered on time.
+
+**Input:**
+```json
+{
+  "orders": [
+    { "id": 1, "location": "City A", "quantity": 500, "deadline": "2024-10-10" },
+    { "id": 2, "location": "City B", "quantity": 700, "deadline": "2024-10-12" },
+    { "id": 3, "location": "City C", "quantity": 600, "deadline": "2024-10-15" },
+    { "id": 4, "location": "City D", "quantity": 400, "deadline": "2024-10-11" }
+  ],
+  "warehouses": [
+    { "id": 1, "location": "Warehouse X", "inventory": 1000, "shippingRate": 10, "shippingSpeed": 1 },
+    { "id": 2, "location": "Warehouse Y", "inventory": 800, "shippingRate": 12, "shippingSpeed": 1.5 },
+    { "id": 3, "location": "Warehouse Z", "inventory": 500, "shippingRate": 15, "shippingSpeed": 2 }
+  ],
+  "distances": [
+    { "from": "Warehouse X", "to": "City A", "distance": 100 },
+    { "from": "Warehouse X", "to": "City B", "distance": 200 },
+    { "from": "Warehouse Y", "to": "City A", "distance": 150 },
+    { "from": "Warehouse Y", "to": "City C", "distance": 300 },
+    { "from": "Warehouse Z", "to": "City C", "distance": 250 },
+    { "from": "Warehouse Z", "to": "City D", "distance": 350 }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "routing": [
+    { "orderId": 1, "warehouseId": 1, "shipmentDistance": 100, "deliveryTime": "2024-10-09" },
+    { "orderId": 2, "warehouseId": 2, "shipmentDistance": 200, "deliveryTime": "2024-10-11" },
+    { "orderId": 3, "warehouseId": 3, "shipmentDistance": 250, "deliveryTime": "2024-10-14" },
+    { "orderId": 4, "warehouseId": 1, "shipmentDistance": 150, "deliveryTime": "2024-10-10" }
+  ],
+  "totalShippingCost": 10350
+}
+```
+
+---
+
+### **Problem 9: Vendor-Managed Inventory with Dynamic Replenishment**
+
+**Problem:**
+You are managing inventory for multiple vendors. Based on real-time sales data, you need to dynamically reorder items to avoid stockouts while minimizing inventory holding costs. Vendors have minimum order quantities and lead times.
+
+**Input:**
+```json
+{
+  "inventory": [
+    { "product": "A", "currentStock": 500, "dailySalesRate": 100, "reorderPoint": 300 },
+    { "product": "B", "currentStock": 700, "dailySalesRate": 150, "reorderPoint": 500 },
+    { "product": "C", "currentStock": 300, "dailySalesRate": 75, "reorderPoint": 200 }
+  ],
+  "vendors": [
+    { "id": 1, "product": "A", "minOrderQuantity": 200, "leadTime": 3, "pricePerUnit": 9 },
+    { "id": 2, "product": "B",
+
+ "minOrderQuantity": 300, "leadTime": 4, "pricePerUnit": 12 },
+    { "id": 3, "product": "C", "minOrderQuantity": 150, "leadTime": 2, "pricePerUnit": 15 }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "reorderPlan": [
+    { "productId": "A", "vendorId": 1, "orderQuantity": 400, "replenishDate": "2024-10-07" },
+    { "productId": "B", "vendorId": 2, "orderQuantity": 300, "replenishDate": "2024-10-08" },
+    { "productId": "C", "vendorId": 3, "orderQuantity": 150, "replenishDate": "2024-10-05" }
+  ]
+}
+```
+
+---
+
+### **Problem 10: Shipment Rescheduling with Last-Minute Changes**
+
+**Problem:**
+You need to reschedule shipments due to a last-minute change in delivery windows and priorities. Each shipment has an updated time window and priority level. You must reallocate trucks and minimize delays.
+
+**Input:**
+```json
+{
+  "shipments": [
+    { "id": 1, "destination": "City A", "priority": 2, "updatedTimeWindow": [9, 14] },
+    { "id": 2, "destination": "City B", "priority": 1, "updatedTimeWindow": [8, 12] },
+    { "id": 3, "destination": "City C", "priority": 3, "updatedTimeWindow": [10, 16] },
+    { "id": 4, "destination": "City D", "priority": 1, "updatedTimeWindow": [7, 11] }
+  ],
+  "trucks": [
+    { "id": 1, "capacity": 1500, "availability": [6, 14] },
+    { "id": 2, "capacity": 1200, "availability": [7, 15] }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "rescheduledShipments": [
+    { "truckId": 1, "shipmentId": 2, "departureTime": 8, "arrivalTime": 11 },
+    { "truckId": 2, "shipmentId": 4, "departureTime": 7, "arrivalTime": 9 },
+    { "truckId": 1, "shipmentId": 1, "departureTime": 11, "arrivalTime": 13 }
+  ],
+  "totalDelay": 1.5
+}
+```
+
+---
+
+These additional five problems further increase the complexity and realism by adding constraints such as **lead times, inventory management, weather disruptions, rescheduling, and multiple warehouses**. They require balancing between multiple factors like cost, inventory, priority, and dynamic changes to plans.
+
+Let me know if you need more or further refinement on these problems!
+
+Here are **5 more highly complex real-world problems**, with detailed, large inputs and advanced logistics concepts such as **cross-docking, driver shifts, delivery appointments, multi-leg routing**, and **dynamic pricing**. These problems integrate everything from shipment planning to vendor management, cross-dock logistics, and route optimization with real-life constraints.
+
+---
+
+### **Problem 11: Cross-Dock Logistics with Dynamic Route Planning**
+
+**Problem:**
+You are managing a **cross-docking operation** where shipments arrive from various suppliers and need to be routed to different destinations without being stored at the dock. Each shipment must be unloaded, assigned to a truck, and immediately sent to its next destination. You need to minimize the total time shipments spend at the cross-dock while considering unloading and loading times, and truck availability.
+
+**Input:**
+```json
+{
+  "incomingShipments": [
+    { "id": 1, "origin": "Supplier A", "destination": "Retailer X", "unloadTime": 2, "loadTime": 1, "volume": 500 },
+    { "id": 2, "origin": "Supplier B", "destination": "Retailer Y", "unloadTime": 3, "loadTime": 2, "volume": 400 },
+    { "id": 3, "origin": "Supplier C", "destination": "Retailer Z", "unloadTime": 1.5, "loadTime": 1.5, "volume": 300 },
+    { "id": 4, "origin": "Supplier D", "destination": "Retailer X", "unloadTime": 2.5, "loadTime": 1, "volume": 350 }
+  ],
+  "trucks": [
+    { "id": 1, "availableCapacity": 1000, "arrivalTime": 8 },
+    { "id": 2, "availableCapacity": 800, "arrivalTime": 9 },
+    { "id": 3, "availableCapacity": 600, "arrivalTime": 10 }
+  ],
+  "crossDock": {
+    "totalDockCapacity": 3,
+    "dockHandlingSpeed": 2
+  }
+}
+```
+
+**Expected Output:**
+```json
+{
+  "shipmentAssignments": [
+    { "shipmentId": 1, "truckId": 1, "crossDockTime": 3 },
+    { "shipmentId": 2, "truckId": 2, "crossDockTime": 5 },
+    { "shipmentId": 3, "truckId": 3, "crossDockTime": 3 },
+    { "shipmentId": 4, "truckId": 1, "crossDockTime": 3.5 }
+  ],
+  "totalCrossDockTime": 14.5
+}
+```
+
+---
+
+### **Problem 12: Multi-Leg Routing with Driver Shifts and Rest Breaks**
+
+**Problem:**
+You are tasked with planning a complex **multi-leg shipment route** for several trucks. Each truck has a driver that can only drive for a limited number of hours before requiring a mandatory rest. The shipments need to go through **multiple legs** of the journey, including **cross-docks** for reloading. You must ensure deliveries are completed within a specified timeframe while considering driver rest periods and cross-dock handling.
+
+**Input:**
+```json
+{
+  "shipments": [
+    { "id": 1, "origin": "Warehouse A", "destination": "City X", "volume": 500, "requiredDeliveryTime": 12 },
+    { "id": 2, "origin": "Warehouse B", "destination": "City Y", "volume": 300, "requiredDeliveryTime": 10 },
+    { "id": 3, "origin": "Warehouse C", "destination": "City Z", "volume": 700, "requiredDeliveryTime": 14 }
+  ],
+  "drivers": [
+    { "id": 1, "shiftHours": 8, "restTime": 2, "availableHours": 6 },
+    { "id": 2, "shiftHours": 10, "restTime": 3, "availableHours": 8 },
+    { "id": 3, "shiftHours": 12, "restTime": 4, "availableHours": 10 }
+  ],
+  "crossDocks": [
+    { "id": 1, "location": "Cross-Dock A", "handlingTime": 1.5, "capacity": 1000 },
+    { "id": 2, "location": "Cross-Dock B", "handlingTime": 2, "capacity": 1200 }
+  ],
+  "routes": [
+    { "from": "Warehouse A", "to": "Cross-Dock A", "distance": 300, "time": 4 },
+    { "from": "Cross-Dock A", "to": "City X", "distance": 400, "time": 5 },
+    { "from": "Warehouse B", "to": "Cross-Dock B", "distance": 200, "time": 3 },
+    { "from": "Cross-Dock B", "to": "City Y", "distance": 300, "time": 4 },
+    { "from": "Warehouse C", "to": "City Z", "distance": 500, "time": 6 }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "routePlan": [
+    {
+      "driverId": 1,
+      "shipmentId": 1,
+      "stops": [
+        { "from": "Warehouse A", "to": "Cross-Dock A", "departure": 6, "arrival": 10 },
+        { "from": "Cross-Dock A", "to": "City X", "departure": 11.5, "arrival": 16.5 }
+      ],
+      "totalTime": 10.5
+    },
+    {
+      "driverId": 2,
+      "shipmentId": 2,
+      "stops": [
+        { "from": "Warehouse B", "to": "Cross-Dock B", "departure": 7, "arrival": 10 },
+        { "from": "Cross-Dock B", "to": "City Y", "departure": 12, "arrival": 16 }
+      ],
+      "totalTime": 9
+    }
+  ],
+  "driverRestBreaks": [
+    { "driverId": 1, "restTaken": 1.5 },
+    { "driverId": 2, "restTaken": 2 }
+  ]
+}
+```
+
+---
+
+### **Problem 13: Appointment-Based Delivery Scheduling with Dynamic Pricing**
+
+**Problem:**
+You are managing a system where customers can schedule **delivery appointments** for their orders. Each delivery appointment has a time window, and delivery charges vary based on the chosen time window and vehicle availability. Customers can choose standard, expedited, or priority slots, each with different costs. You need to allocate delivery appointments while maximizing revenue and minimizing idle time for the trucks.
+
+**Input:**
+```json
+{
+  "appointments": [
+    { "customerId": 1, "orderVolume": 100, "preferredTimeWindow": [9, 11], "deliveryType": "expedited" },
+    { "customerId": 2, "orderVolume": 150, "preferredTimeWindow": [13, 15], "deliveryType": "standard" },
+    { "customerId": 3, "orderVolume": 200, "preferredTimeWindow": [10, 12], "deliveryType": "priority" },
+    { "customerId": 4, "orderVolume": 300, "preferredTimeWindow": [8, 10], "deliveryType": "expedited" },
+    { "customerId": 5, "orderVolume": 250, "preferredTimeWindow": [14, 16], "deliveryType": "standard" }
+  ],
+  "trucks": [
+    { "id": 1, "capacity": 500, "availability": [8, 16] },
+    { "id": 2, "capacity": 600, "availability": [9, 17] }
+  ],
+  "pricing": {
+    "standard": 5,
+    "expedited": 10,
+    "priority": 20
+  }
+}
+```
+
+**Expected Output:**
+```json
+{
+  "deliverySchedule": [
+    { "customerId": 4, "truckId": 1, "timeWindow": [8, 10], "charge": 3000 },
+    { "customerId": 1, "truckId": 1, "timeWindow": [10, 12], "charge": 1000 },
+    { "customerId": 3, "truckId": 2, "timeWindow": [10, 12], "charge": 4000 },
+    { "customerId": 2, "truckId": 1, "timeWindow": [13, 15], "charge": 750 },
+    { "customerId": 5, "truckId": 2, "timeWindow": [14, 16], "charge": 1250 }
+  ],
+  "totalRevenue": 10000,
+  "truckIdleTimes": [
+    { "truckId": 1, "idleTime": 1 },
+    { "truckId": 2, "idleTime": 1 }
+  ]
+}
+```
+
+---
+
+### **Problem 14: Real-Time Shipment Tracking and Rerouting with Traffic Conditions**
+
+**Problem:**
+You are tasked with building a
+
+ system that tracks shipments in real-time. If a route experiences **traffic delays**, the system should dynamically reroute trucks to alternative routes. Each shipment must still be delivered within a certain time window. You must minimize rerouting costs and ensure that high-priority shipments are not delayed.
+
+**Input:**
+```json
+{
+  "shipments": [
+    { "id": 1, "origin": "Warehouse A", "destination": "City P", "priority": 1, "volume": 400, "timeWindow": [8, 14] },
+    { "id": 2, "origin": "Warehouse B", "destination": "City Q", "priority": 2, "volume": 300, "timeWindow": [9, 16] },
+    { "id": 3, "origin": "Warehouse C", "destination": "City R", "priority": 1, "volume": 600, "timeWindow": [7, 15] }
+  ],
+  "routes": [
+    { "from": "Warehouse A", "to": "City P", "distance": 400, "time": 5 },
+    { "from": "Warehouse B", "to": "City Q", "distance": 300, "time": 4 },
+    { "from": "Warehouse C", "to": "City R", "distance": 600, "time": 6 }
+  ],
+  "trafficConditions": [
+    { "route": ["Warehouse A", "City P"], "delay": 2 },
+    { "route": ["Warehouse C", "City R"], "delay": 1 }
+  ],
+  "alternativeRoutes": [
+    { "route": ["Warehouse A", "City P"], "newDistance": 500, "newTime": 6 },
+    { "route": ["Warehouse C", "City R"], "newDistance": 700, "newTime": 7 }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "rerouting": [
+    { "shipmentId": 1, "newRoute": ["Warehouse A", "City P"], "newTime": 6, "reroutingCost": 1000 },
+    { "shipmentId": 3, "newRoute": ["Warehouse C", "City R"], "newTime": 7, "reroutingCost": 1200 }
+  ],
+  "onTimeShipments": [
+    { "shipmentId": 1 },
+    { "shipmentId": 2 },
+    { "shipmentId": 3 }
+  ]
+}
+```
+
+---
+
+### **Problem 15: Full Supply Chain Simulation with Vendor Coordination and Order Fulfillment**
+
+**Problem:**
+You need to coordinate with multiple vendors to fulfill customer orders while managing inventory, shipment schedules, and delivery appointments. Vendors can only supply limited quantities per day, and orders need to be split across multiple days and trucks. The goal is to minimize total costs and ensure timely deliveries by dynamically coordinating between vendors, cross-docks, and warehouses.
+
+**Input:**
+```json
+{
+  "orders": [
+    { "id": 1, "customer": "Retailer X", "quantity": 1500, "deadline": "2024-10-15" },
+    { "id": 2, "customer": "Retailer Y", "quantity": 2000, "deadline": "2024-10-17" },
+    { "id": 3, "customer": "Retailer Z", "quantity": 1200, "deadline": "2024-10-14" }
+  ],
+  "vendors": [
+    { "id": 1, "product": "A", "maxSupplyPerDay": 500, "pricePerUnit": 8 },
+    { "id": 2, "product": "B", "maxSupplyPerDay": 700, "pricePerUnit": 7 },
+    { "id": 3, "product": "C", "maxSupplyPerDay": 600, "pricePerUnit": 9 }
+  ],
+  "crossDocks": [
+    { "id": 1, "location": "Cross-Dock 1", "capacity": 2000, "handlingTime": 2 },
+    { "id": 2, "location": "Cross-Dock 2", "capacity": 2500, "handlingTime": 3 }
+  ],
+  "trucks": [
+    { "id": 1, "capacity": 1000, "availability": [8, 18] },
+    { "id": 2, "capacity": 1200, "availability": [9, 19] }
+  ]
+}
+```
+
+**Expected Output:**
+```json
+{
+  "fulfillmentPlan": [
+    { "orderId": 1, "vendorId": 1, "quantity": 1000, "deliveryDate": "2024-10-13" },
+    { "orderId": 1, "vendorId": 2, "quantity": 500, "deliveryDate": "2024-10-14" },
+    { "orderId": 2, "vendorId": 3, "quantity": 1200, "deliveryDate": "2024-10-15" },
+    { "orderId": 2, "vendorId": 2, "quantity": 800, "deliveryDate": "2024-10-16" }
+  ],
+  "totalCost": 27500,
+  "truckSchedule": [
+    { "truckId": 1, "capacityUsed": 1000, "routes": [["Cross-Dock 1", "Retailer X"]] },
+    { "truckId": 2, "capacityUsed": 1200, "routes": [["Cross-Dock 2", "Retailer Y"]] }
+  ]
+}
+```
+
+---
+
+These new problems introduce advanced logistics concepts like **cross-docking, driver shifts, real-time traffic rerouting, delivery appointments, multi-leg routing, and vendor coordination** with more detailed and challenging inputs. These problems simulate full-scale logistics operations involving complex decisions about inventory, routing, and cost optimization. Let me know if you'd like even more scenarios or specific refinements!
